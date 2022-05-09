@@ -14,10 +14,10 @@ import (
 
 type handler struct {
 	conn net.Conn
-	// reply string 
 		//指定仓库目录
 	repoPath string
 }
+
 
 func (h *handler) run() {
 
@@ -27,7 +27,7 @@ func (h *handler) run() {
 			fmt.Println(err)
 			return
 		}
-		fmt.Print("> " + msg)
+		fmt.Print("< " + msg)
 		h.parseCmd(msg)
 	}
 }
@@ -73,7 +73,7 @@ func (h *handler)noCmd(msg string) {
 
 
 func  (h *handler)timeCmd() {
-		// h.conn.Write([]byte(time.Now().Format("2006-01-02 15:04:05") + "\n" ));
+		//go的诞生时间
 		h.replyClient(time.Now().Format("2006-01-02 15:04:05"))
 		// h.reply = time.Now().Format("2006-01-02 15:04:05")
 }
@@ -94,14 +94,14 @@ func  (h *handler)lsCmd() {
 	if err != nil {
 		// h.conn.Write([]byte("Ls Error:" + err.Error() + "\n"));
 		fmt.Println("Error:", err)
-		h.replyClient("服务器错误!")
+		h.replyClient("服务器发生错误!")
 		return
 	}	
 	s := strings.Join(files, ",")
 	// fmt.Println(s)
 	h.replyClient(s)
-	// h.reply = s
 }
+
 
 func  (h *handler)reqCmd(filename string) {
 
@@ -133,7 +133,7 @@ func (h *handler)replyClient(msg string) {
 	// 同时打印回复给客户端的内容
 	// fmt.Println("< " + h.reply)
 	// h.conn.Write([]byte(h.reply + "\r\n" ))
-		 fmt.Println("< " + msg)
+		 fmt.Println("> " + msg)
 	   h.conn.Write([]byte(msg + "\r\n" ))
 }
 
@@ -164,26 +164,22 @@ func (h *handler)sendFile(filename string) {
 	}
 } 
 
-
+//遍历路径下的所有文件，将文件名数组返回
 func  (h *handler)listFiles() (files []string, err error) {
 
 	dirPath := h.repoPath
 	//为slice分配空间
 	files = make([]string, 0, 10)
+	//读取目录
 	dir, err := ioutil.ReadDir(dirPath)
 	if err != nil {
 			 return nil, err
 	}
-	// pathSep := string(os.PathSeparator)
-	// suffix = strings.ToUpper(suffix) //忽略后缀匹配的大小写
 	for _, f := range dir {
 	 if f.IsDir() { // 忽略目录
 				continue
 	 }
-	//  if strings.HasSuffix(strings.ToUpper(fi.Name()), suffix) { //匹配文件
-		// files = append(files, dirPath + pathSep + fi.Name())
-	//  }
-		files = append(files, f.Name())
+	 files = append(files, f.Name())
 	}
 	return files, nil
 }

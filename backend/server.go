@@ -21,22 +21,17 @@ func (s *server) Startup(port string) {
 
   	fmt.Println("I'm Server")
 
-		// 输入端口号
-		// fmt.Println("Enter the port to Listen: ")
-    // var port string
-		// fmt.Scanln(&port)
-
 		listener, err := net.Listen("tcp", "0.0.0.0:"+ port)
 
 		if err != nil {
-				log.Fatalf("unable to Listen :%s", err.Error())
+				log.Fatalf("unable to listen :%s", err.Error())
 				fmt.Println(err)
 				return
 		}
 		defer listener.Close()
 
-		fmt.Println("开始监听")
-
+		fmt.Println("start listening")
+		//每接收到一个新的TCP连接，就用new一个Handler来进行处理
 		for {
 				conn, err := listener.Accept()
 				if err != nil {
